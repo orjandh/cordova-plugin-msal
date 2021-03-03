@@ -159,6 +159,9 @@ public class MsalPlugin extends CordovaPlugin {
                     otherScopesToAuthorize = scopes.toArray(new String[scopes.size()]);
                 }
                 String policyUrl = args.length() > 5 ? args.getString(5) : "";
+                if (policyUrl.equals("null")) {
+                    policyUrl = "";
+                }
                 this.signinUserInteractive(loginHint, authorizationQueryStringParameters, prompt, otherScopesToAuthorize, policyUrl);
             }
         } catch (Exception e) {
@@ -391,8 +394,11 @@ public class MsalPlugin extends CordovaPlugin {
                                     public void onError(MsalException e) {
                                         MsalPlugin.this.callbackContext.error(e.getMessage());
                                     }
-                                })
-                                .fromAuthority(policyUrl);
+                                });
+
+                        if (!policyUrl.equals("")) {
+                            params = params.fromAuthority(policyUrl);
+                        }
                         if (!loginHint.equals("")) {
                             params = params.withLoginHint(loginHint);
                         }
