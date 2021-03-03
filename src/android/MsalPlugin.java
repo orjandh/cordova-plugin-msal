@@ -158,7 +158,8 @@ public class MsalPlugin extends CordovaPlugin {
                     }
                     otherScopesToAuthorize = scopes.toArray(new String[scopes.size()]);
                 }
-                this.signinUserInteractive(loginHint, authorizationQueryStringParameters, prompt, otherScopesToAuthorize);
+                String policyUrl = args.length() > 5 ? args.getString(5) : "";
+                this.signinUserInteractive(loginHint, authorizationQueryStringParameters, prompt, otherScopesToAuthorize, policyUrl);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -364,7 +365,7 @@ public class MsalPlugin extends CordovaPlugin {
         }
     }
 
-    private void signinUserInteractive(final String loginHint, final List<Pair<String, String>> authorizationQueryStringParameters, final Prompt prompt, final String[] otherScopesToAuthorize) {
+    private void signinUserInteractive(final String loginHint, final List<Pair<String, String>> authorizationQueryStringParameters, final Prompt prompt, final String[] otherScopesToAuthorize, final String policyUrl) {
         if (this.checkConfigInit()) {
             if (this.SINGLE_ACCOUNT.equals(this.accountMode)) {
                 cordova.getThreadPool().execute(new Runnable() {
@@ -390,7 +391,8 @@ public class MsalPlugin extends CordovaPlugin {
                                     public void onError(MsalException e) {
                                         MsalPlugin.this.callbackContext.error(e.getMessage());
                                     }
-                                });
+                                })
+                                .fromAuthority(policyUrl);
                         if (!loginHint.equals("")) {
                             params = params.withLoginHint(loginHint);
                         }
