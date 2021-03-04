@@ -315,13 +315,7 @@
         NSString *loginHint = (NSString *)[command.arguments objectAtIndex:0];
         NSString *prompt = (NSString *)[command.arguments objectAtIndex:1];
         NSString *webViewType = (NSString *)[command.arguments objectAtIndex:4];
-        
-        if (err)
-        {
-            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:[NSString stringWithFormat:@"Error parsing options object: %@", err]];
-            [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
-            return;
-        }
+        NSString *policyUrl = (NSString *)[command.arguments objectAtIndex:5];
         
         if (![webViewType isEqual:[NSNull null]]) {
             if ([webViewType isEqualToString:@"WK_WEB_VIEW"])
@@ -354,6 +348,21 @@
             {
                 interactiveParams.promptType = MSALPromptTypeConsent;
             }
+        }
+
+        if (![policyUrl isEqual:[NSNull null]] && [policyUrl length] > 0)
+        {
+            NSURL *authorityUrl = [[NSURL alloc] initWithString:(NSString *) policyUrl];
+            MSALAuthority *authority = [[MSALB2CAuthority alloc] initWithUrl:authorityUrl error:&err];
+            
+            if (err)
+            {
+                result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:[err.userInfo objectForKey:@"MSALErrorDescriptionKey"]];
+                [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+                return;
+            }
+            
+            interactiveParams.authority = authority;
         }
         
         NSArray *queryStrings = [command.arguments objectAtIndex:2];
