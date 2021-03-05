@@ -433,6 +433,10 @@ public class MsalPlugin extends CordovaPlugin {
                                         MsalPlugin.this.callbackContext.error(e.getMessage());
                                     }
                                 });
+
+                        if (!policyUrl.equals("")) {
+                            params = params.fromAuthority(policyUrl);
+                        }
                         if (!loginHint.equals("")) {
                             params = params.withLoginHint(loginHint);
                         }
