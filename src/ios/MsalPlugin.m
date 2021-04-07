@@ -353,7 +353,7 @@
         if (![policyUrl isEqual:[NSNull null]] && [policyUrl length] > 0)
         {
             NSURL *authorityUrl = [[NSURL alloc] initWithString:(NSString *) policyUrl];
-            MSALAuthority *authority = [[MSALB2CAuthority alloc] initWithUrl:authorityUrl error:&err];
+            MSALAuthority *authority = [[MSALB2CAuthority alloc] initWithURL:authorityUrl error:&err];
             
             if (err)
             {
